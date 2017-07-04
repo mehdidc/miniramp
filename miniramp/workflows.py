@@ -14,7 +14,7 @@ def classification(codes, data, validation, scores):
     split = build_func(validation)
     score_funcs = {base_name(score): build_func(score) for score in scores}
 
-    X_train_full, X_test, y_train_full, y_test = load_data()
+    (X_train_full, y_train_full), (X_test, y_test) = load_data()
     
     train_scores = defaultdict(list)
     valid_scores = defaultdict(list)

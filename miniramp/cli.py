@@ -6,6 +6,7 @@ from lightjob.cli import load_db
 
 from miniramp.utils import import_object
 
+
 def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.iris', save=False, db_path=None):
     problem_d = import_object(problem)
     

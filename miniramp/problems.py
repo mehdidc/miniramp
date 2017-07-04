@@ -21,3 +21,19 @@ iris = {
         'miniramp.scores.log_loss'
     ]
 }
+
+cifar10 = {
+    'name': 'cifar10',
+    'workflow': 'miniramp.workflows.classification',
+    'data': 'miniramp.data.cifar10',
+    'validation' : {
+        'name': 'miniramp.validation.shuffle_split',
+        'params':{
+            'n_splits': 1
+        }
+    },
+    'scores' : [
+        'miniramp.scores.accuracy', 
+        'miniramp.scores.log_loss'
+    ]
+}
