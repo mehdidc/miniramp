@@ -1,27 +1,19 @@
-from setuptools import setup
+from __future__ import print_function
+from setuptools import setup, find_packages
 
-setup(
-    name="miniramp",
-    version="0.1",
-    author="mehdi cherti",
-    author_email="mehdicherti@gmail.com",
-    description=(""),
-    license="MIT",
-    keywords="",
-    url="",
-    zip_safe=False,  # the package can run out of an .egg file
-    classifiers=['Intended Audience :: Science/Research',
-                 'Intended Audience :: Developers',
-                 'License :: OSI Approved',
-                 'Programming Language :: Python',
-                 'Topic :: Software Development',
-                 'Topic :: Scientific/Engineering',
-                 'Operating System :: Microsoft :: Windows',
-                 'Operating System :: POSIX',
-                 'Operating System :: Unix',
-                 'Operating System :: MacOS'],
-    platforms='any',
-    packages=['miniramp'],
-    requires=[],
-    py_modules=[],
+with open('requirements.txt') as f:
+    INSTALL_REQUIRES = [l.strip() for l in f.readlines() if l]
+
+setup(name='miniramp',
+      version='0.0.1',
+      description='mini-ramp',
+      author='Mehdi Cherti',
+      packages=find_packages(),
+      install_requires=INSTALL_REQUIRES,
+      author_email='mehdicherti@gmail.com',
+      entry_points={
+        'console_scripts': [
+           'miniramp = miniramp.cli:main'
+         ]
+      }
 )

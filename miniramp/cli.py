@@ -1,9 +1,10 @@
 import json
 import time
-from utils import import_object
 
 from clize import run
 from lightjob.cli import load_db
+
+from miniramp.utils import import_object
 
 def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.iris', save=False, db_path=None):
     problem_d = import_object(problem)
@@ -48,5 +49,5 @@ def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.
            end=end
         )
 
-if __name__ == '__main__':
+def main():
     run([train])
