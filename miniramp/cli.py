@@ -1,8 +1,12 @@
+import warnings
 import json
 import time
+import traceback
 
 from clize import run
+
 from lightjob.cli import load_db
+from lightjob.db import SUCCESS, ERROR
 
 from miniramp.utils import import_object
 
@@ -11,6 +15,7 @@ def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.
     problem_d = import_object(problem)
     
     workflow = problem_d['workflow']
+    options = problem_d['workflow_options']
     data = problem_d['data']
     validation = problem_d['validation']
     scores =  problem_d['scores']
@@ -24,12 +29,23 @@ def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.
     assert set(codes.keys()) == set(wf.requirements)
 
     start = time.time()
-    out = wf(
-        codes=codes, 
-        data=data,
-        validation=validation,
-        scores=scores
-    )
+    try:
+        out = wf(
+            codes=codes, 
+            data=data,
+            validation=validation,
+            scores=scores,
+            options=options
+        )
+    except Exception as ex:
+        traceback = _get_traceback() 
+        warnings.warn('Raised an exception : {}. Putting state to error'.format(ex))
+        state = ERROR
+        out = {}
+    else:
+        state = SUCCESS
+        traceback = ''
+ 
     end = time.time()
     content = {
         'codes': codes,
@@ -47,8 +63,17 @@ def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.
            sampler=sampler,
            stats=out,
            start=start,
-           end=end
+           end=end,
+           state=state,
+           traceback=traceback
         )
+
+
+def _get_traceback():
+    lines  = traceback.format_exc().splitlines()
+    lines = '\n'.join(lines)
+    return lines
+
 
 def main():
     run([train])

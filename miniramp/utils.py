@@ -11,6 +11,19 @@ from urllib.error import HTTPError
 from urllib.error import URLError
 from urllib.request import urlopen
 
+class ClassifierEnsemble:
+    
+    def __init__(self, clfs):
+        self.clfs = clfs
+
+    def predict(self, X):
+        return self.predict_proba(X).argmax(axis=1)
+
+    def predict_proba(self, X):
+        preds = [clf.predict_proba(X) for clf in self.clfs]
+        pred = sum(preds) / len(preds)
+        return pred
+
 def base_name(full_name):
     split = full_name.split('.')
     return split[-1]

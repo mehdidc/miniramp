@@ -1,18 +1,35 @@
 import numpy as np
 rng = np.random
 
-rf_classifier = """
-from functools import partial
-from sklearn.ensemble import RandomForestClassifier
-Classifier = partial(RandomForestClassifier,
-    max_depth={max_depth}, 
-    n_estimators={n_estimators}
-)
+classifier = """
+{head}
+class Classifier:
+    
+    def __init__(self):
+        self.clf = {clf}
+
+    def fit(self, X, y):
+        X = X.reshape((X.shape[0], -1))
+        self.clf.fit(X, y)
+        return self
+
+    def predict(self, X):
+        X = X.reshape((X.shape[0], -1))
+        return self.clf.predict(X)
+
+    def predict_proba(self, X):
+        X = X.reshape((X.shape[0], -1))
+        return self.clf.predict_proba(X)
 """
+
 def _rf_classifier():
     n_estimators = rng.randint(1, 100)
     max_depth = rng.randint(1, 50)
-    return rf_classifier, {'n_estimators': n_estimators, 'max_depth': max_depth}
+    code = classifier.format(
+        head="from sklearn.ensemble import RandomForestClassifier",
+        clf="RandomForestClassifier(max_depth={}, n_estimators={})".format(max_depth, n_estimators)
+    )
+    return code, {'n_estimators': n_estimators, 'max_depth': max_depth}
 
 
 def sklearn_classifier():
@@ -96,8 +113,10 @@ def keras_dense_classifier():
     }
     return out
 
+
 def _sample_nb_layers():
     return 1
+
 
 def _sample_size_dense_layer():
     return 100
