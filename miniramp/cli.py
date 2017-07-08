@@ -1,6 +1,6 @@
 import warnings
 import json
-import time
+from datetime import datetime
 import traceback
 
 from clize import run
@@ -28,7 +28,7 @@ def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.
     wf = import_object(workflow)
     assert set(codes.keys()) == set(wf.requirements)
 
-    start = time.time()
+    start = datetime.now()
     try:
         out = wf(
             codes=codes, 
@@ -44,9 +44,8 @@ def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.
         out = {}
     else:
         state = SUCCESS
-        traceback = ''
- 
-    end = time.time()
+        traceback = '' 
+    end = datetime.now()
     content = {
         'codes': codes,
         'info': info,
@@ -62,8 +61,9 @@ def train(*, sampler='miniramp.samplers.classifier', problem='miniramp.problems.
            problem=problem,
            sampler=sampler,
            stats=out,
-           start=start,
-           end=end,
+           start=str(start),
+           end=str(end),
+           duration=(end-start).total_seconds(),
            state=state,
            traceback=traceback
         )
