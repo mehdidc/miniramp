@@ -18,6 +18,17 @@ def read_csv(filename, y_col, test_size=0.3, random_state=42):
     return (X_train, y_train), (X_test, y_test)
 
 
+def mnist():
+    dirname = 'mnist'
+    origin = 'https://s3.amazonaws.com/img-datasets/mnist.npz'
+    path = get_file(dirname, origin=origin)
+    f = np.load(path)
+    x_train, y_train = f['x_train'], f['y_train']
+    x_test, y_test = f['x_test'], f['y_test']
+    f.close()
+    return (x_train, y_train), (x_test, y_test)
+
+
 def cifar10():
     # borrowed from keras
     """Loads CIFAR10 dataset.

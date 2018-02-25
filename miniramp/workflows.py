@@ -2,6 +2,8 @@ import time
 
 from collections import defaultdict
 
+import numpy as np
+
 from .utils import build_func
 from .utils import base_name
 from .utils import eval_and_get
@@ -9,7 +11,7 @@ from .utils import ClassifierEnsemble
 
 def classification(codes, data, validation, scores, options):
     final_model_strategy = options['final_model_strategy']
-    assert final_model_strategy in ('retrain', 'bagging')
+    assert final_model_strategy in ('retrain', 'bagging', 'best')
 
     Classifier = eval_and_get(codes['classifier'], 'Classifier')
     load_data = build_func(data)
@@ -49,7 +51,12 @@ def classification(codes, data, validation, scores, options):
         train_stats.append(stat)
     elif final_model_strategy == 'bagging':
         clf = ClassifierEnsemble(clfs)
-    
+    elif final_model_strategy.startswith('best'):
+        _, score, which = final_model_strategy.split('.', 2)
+        assert which in ('max', 'min')
+        select = np.argmax if which == 'max' else np.argmin
+        clf = clfs[select(valid_scores[score])]
+
     train_full_scores = {}
     test_scores = {}
 
