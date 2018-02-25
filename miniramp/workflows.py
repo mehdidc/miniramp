@@ -5,7 +5,6 @@ from collections import defaultdict
 from .utils import build_func
 from .utils import base_name
 from .utils import eval_and_get
-from .utils import import_object
 from .utils import ClassifierEnsemble
 
 def classification(codes, data, validation, scores, options):
@@ -22,6 +21,7 @@ def classification(codes, data, validation, scores, options):
     train_scores = defaultdict(list)
     valid_scores = defaultdict(list)
     clfs = []
+    train_stats = []
     for train, valid in split(X_train_full, y_train_full):
         X_train = X_train_full[train]
         y_train = y_train_full[train]
@@ -30,8 +30,10 @@ def classification(codes, data, validation, scores, options):
         
         t0 = time.time()
         clf = Classifier()
-        clf.fit(X_train, y_train)
+        stat = clf.fit(X_train, y_train)
         clfs.append(clf)
+        train_stats.append(stat)
+
         train_scores['time'].append(time.time() - t0)
         
         t0 = time.time()
@@ -43,8 +45,8 @@ def classification(codes, data, validation, scores, options):
     if final_model_strategy == 'retrain':
         t0 = time.time()
         clf = Classifier()
-        clf.fit(X_train_full, y_train_full)
-        train_full_scores['time'] = time.time() - t0
+        stat = clf.fit(X_train_full, y_train_full)
+        train_stats.append(stat)
     elif final_model_strategy == 'bagging':
         clf = ClassifierEnsemble(clfs)
     
@@ -61,7 +63,8 @@ def classification(codes, data, validation, scores, options):
         'train': train_scores,
         'valid': valid_scores,
         'train_full': train_full_scores,
-        'test': test_scores
+        'test': test_scores,
+        'stats': train_stats,
     }
     return out 
 classification.requirements = ['classifier']
